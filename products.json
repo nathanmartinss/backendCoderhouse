@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Playstation 5",
+    "description": "O console de nova geração da Sony",
+    "price": 4000,
+    "thumbnail": "https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21?$facebook$",
+    "code": "1",
+    "stock": 10
+  },
+  {
+    "id": 2,
+    "title": "The Last Of Us",
+    "description": "Um dos maiores jogos da história",
+    "price": 200,
+    "thumbnail": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/eEczyEMDd2BLa3dtkGJVE9Id.png",
+    "code": "2",
+    "stock": 5
+  }
+]
