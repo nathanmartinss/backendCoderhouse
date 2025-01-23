@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "express": "^4.21.2",
-    "produto": "file:"
+    "express-handlebars": "^8.0.1",
+    "produto": "file:",
+    "socket.io": "^4.8.1"
   }
 }
