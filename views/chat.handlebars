@@ -1,0 +1,30 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>Chat</h1>
+    <ul id="messages">
+      {{#each messages}}
+        <li><strong>{{this.user}}:</strong> {{this.message}}</li>
+      {{/each}}
+    </ul>
+
+    <form action="/chat" method="POST">
+      <input type="text" name="user" placeholder="Seu nome" required />
+      <input type="text" name="message" placeholder="Mensagem" required />
+      <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+      const socket = io(); socket.on("newMessage", (message) => { const
+      messagesList = document.getElementById("messages"); const newMessage =
+      document.createElement("li"); newMessage.innerHTML =
+      `<strong>${message.user}:</strong> ${message.message}`;
+      messagesList.appendChild(newMessage); });
+    </script>
+  </body>
+</html>
