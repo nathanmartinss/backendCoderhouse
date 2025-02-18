@@ -5,7 +5,9 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
-const Product = require("./models/Product");
+
+const productsRouter = require("./routes/products.routes");
+const cartsRouter = require("./routes/carts.routes");
 
 const app = express();
 const server = http.createServer(app);
@@ -21,48 +23,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("🔥 Conectado ao MongoDB"))
   .catch((err) => console.error("Erro ao conectar ao MongoDB", err));
 
-app.get("/", async (req, res) => {
-  const products = await Product.find();
-  res.render("home", { products });
-});
-
-app.get("/realtimeproducts", async (req, res) => {
-  const products = await Product.find();
-  res.render("realTimeProducts", { products });
-});
-
-app.post("/add", async (req, res) => {
-  const { name, price, description } = req.body;
-  const newProduct = new Product({
-    name,
-    price: Number(price),
-    description,
-  });
-  await newProduct.save();
-  const products = await Product.find();
-  io.emit("updateProducts", products);
-  res.redirect("/realtimeproducts");
-});
-
-app.post("/delete", async (req, res) => {
-  const { id } = req.body;
-  await Product.findByIdAndDelete(id);
-  const products = await Product.find();
-  io.emit("updateProducts", products);
-  res.redirect("/realtimeproducts");
-});
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 
 io.on("connection", async (socket) => {
   console.log("Novo cliente conectado");
-  const products = await Product.find();
-  socket.emit("updateProducts", products);
   socket.on("disconnect", () => {
     console.log("Cliente desconectado");
   });

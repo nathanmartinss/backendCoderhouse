@@ -1,21 +1,44 @@
 const express = require("express");
-const ProductDAO = require("../dao/ProductDAO");
-
+const Product = require("../models/Product");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const products = await ProductDAO.getAllProducts();
-  res.json(products);
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.post("/", async (req, res) => {
-  const newProduct = await ProductDAO.addProduct(req.body);
-  res.json(newProduct);
+  try {
+    const { name, price, description } = req.body;
+    if (!name || !price || !description) {
+      return res
+        .status(400)
+        .json({ message: "Todos os campos são obrigatórios." });
+    }
+
+    const newProduct = new Product({ name, price, description });
+    await newProduct.save();
+
+    res
+      .status(201)
+      .json({ message: "Produto criado com sucesso!", product: newProduct });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.delete("/:id", async (req, res) => {
-  await ProductDAO.deleteProduct(req.params.id);
-  res.json({ message: "Produto excluído" });
+  try {
+    const { id } = req.params;
+    await Product.findByIdAndDelete(id);
+    res.json({ message: "Produto removido com sucesso." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
