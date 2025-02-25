@@ -10,8 +10,7 @@
         <li>
           <strong>{{this.name}}</strong>
           - ${{this.price}}
-          -
-          {{this.category}}
+          - {{this.category}}
           <br />
           <button onclick="addToCart('{{this._id}}')">Adicionar ao Carrinho</button>
         </li>
@@ -20,9 +19,11 @@
 
     <script>
       function addToCart(productId) {
-      fetch(`/api/carts/1/products/${productId}`, { method: "POST" })
-      .then(response => response.json()) .then(data => console.log("Produto
-      adicionado:", data)) .catch(error => console.error("Erro:", error)); }
+        fetch(`/api/carts/1/products/${productId}`, { method: "POST" })
+          .then(response => response.json())
+          .then(data => console.log("Produto adicionado:", data))
+          .catch(error => console.error("Erro:", error));
+      }
     </script>
   </body>
 </html>

@@ -1,24 +1,11 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lista de Produtos</title>
-  </head>
-  <body>
-    <h1>Produtos Disponíveis</h1>
-    <ul>
-      {{#each products}}
-        <li>
-          <strong>Nome:</strong>
-          {{this.name}}
-          <br />
-          <strong>Preço:</strong>
-          ${{this.price}}
-          <br />
-          <strong>Descrição:</strong>
-          {{this.description}}
-        </li>
-      {{/each}}
-    </ul>
-  </body>
-</html>
+<h2>Bem-vindo, {{user.email}}</h2>
+<p>Seu papel: {{user.role}}</p>
+
+<a href="/logout">Sair</a>
+
+<h3>Lista de Produtos</h3>
+<ul>
+  {{#each products}}
+    <li>{{this.name}} - R$ {{this.price}}</li>
+  {{/each}}
+</ul>
