@@ -5,14 +5,14 @@ const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
 
-const productsRouter = require("./routes/products.routes");
-const cartsRouter = require("./routes/carts.routes");
-const authRouter = require("./routes/auth.routes");
-const Product = require("./models/Product");
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+
+const productsRouter = require("./routes/products.routes")(io);
+const cartsRouter = require("./routes/carts.routes");
+const authRouter = require("./routes/auth.routes");
+const Product = require("./models/Product");
 
 const hbs = create({ extname: ".handlebars" });
 app.engine(".handlebars", hbs.engine);
@@ -45,25 +45,21 @@ app.use(
   })
 );
 
-// MongoDB
 const mongoose = require("mongoose");
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("🔥 Conectado ao MongoDB"))
   .catch((err) => console.error("Erro ao conectar ao MongoDB", err));
 
-// Routers
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", authRouter);
 
-// Middleware para verificar se usuário está logado
 const authMiddleware = (req, res, next) => {
   if (!req.session.user) return res.redirect("/login");
   next();
 };
 
-// Rotas principais das views
 app.get("/", authMiddleware, async (req, res) => {
   const products = await Product.find().lean();
   res.render("home", { products, user: req.session.user });
@@ -80,12 +76,26 @@ app.get("/realtimeproducts", authMiddleware, async (req, res) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("Cliente conectado");
-  const products = await Product.find();
+  console.log("Cliente conectado!");
+
+  const products = await Product.find().lean();
   socket.emit("updateProducts", products);
+
+  socket.on("addProduct", async (product) => {
+    try {
+      const newProduct = new Product(product);
+      await newProduct.save();
+      const products = await Product.find().lean();
+      io.emit("updateProducts", products);
+    } catch (error) {
+      console.error("Erro ao adicionar produto:", error);
+    }
+  });
 });
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+module.exports = { app, io };

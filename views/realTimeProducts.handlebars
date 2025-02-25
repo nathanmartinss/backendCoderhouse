@@ -2,60 +2,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Produtos em Tempo Real</title>
+    <title>RealTime Products</title>
     <script src="/socket.io/socket.io.js"></script>
-    <style>
-      body { font-family: Arial, sans-serif; } h1 { text-align: center; } form {
-      margin: 10px auto; padding: 10px; max-width: 400px; border: 1px solid
-      #ccc; border-radius: 5px; } ul { list-style: none; padding: 0; } li {
-      margin-bottom: 10px; }
-    </style>
   </head>
   <body>
     <h1>Produtos em Tempo Real</h1>
 
-    <h2>Lista de Produtos</h2>
     <ul id="product-list">
       {{#each products}}
         <li>
-          <strong>Nome:</strong>
-          {{this.name}}
-          <br />
-          <strong>Preço:</strong>
-          ${{this.price}}
-          <br />
-          <strong>Descrição:</strong>
-          {{this.description}}
+          <strong>{{this.name}}</strong>
+          - R${{this.price}}
+          -
+          {{this.category}}
+          <p>{{this.description}}</p>
         </li>
       {{/each}}
     </ul>
 
     <h2>Adicionar Produto</h2>
-    <form action="/add" method="POST">
-      <label for="name">Nome:</label><br />
-      <input type="text" id="name" name="name" required /><br />
-      <label for="price">Preço:</label><br />
-      <input type="number" id="price" name="price" required /><br />
-      <label for="description">Descrição:</label><br />
-      <textarea id="description" name="description" required></textarea><br />
-      <button type="submit">Adicionar Produto</button>
-    </form>
-
-    <h2>Excluir Produto</h2>
-    <form action="/delete" method="POST">
-      <label for="id">ID do Produto:</label><br />
-      <input type="number" id="id" name="id" required /><br />
-      <button type="submit">Excluir Produto</button>
+    <form id="addProductForm">
+      <input type="text" name="name" placeholder="Nome" required />
+      <input type="number" name="price" placeholder="Preço" required />
+      <textarea name="description" placeholder="Descrição" required></textarea>
+      <select name="category">
+        <option>Periféricos</option>
+        <option>Consoles</option>
+        <option>Jogos</option>
+        <option>Acessórios</option>
+        <option>Hardware</option>
+      </select>
+      <button type="submit">Adicionar</button>
     </form>
 
     <script>
-      const socket = io(); socket.on("updateProducts", (products) => { const
-      productList = document.getElementById("product-list");
-      productList.innerHTML = ""; products.forEach((product) => { const listItem
-      = document.createElement("li"); listItem.innerHTML = `
-      <strong>Nome:</strong> ${product.name} <br> <strong>Preço:</strong>
-      $${product.price} <br> <strong>Descrição:</strong> ${product.description}
-      `; productList.appendChild(listItem); }); });
+      const socket = io(); const productList =
+      document.getElementById("product-list"); const addProductForm =
+      document.getElementById("addProductForm"); socket.on("updateProducts",
+      (products) => { productList.innerHTML = ""; products.forEach((product) =>
+      { productList.innerHTML += ` <li> <strong>${product.name}</strong> - R$
+      ${product.price} - ${product.category || "Sem categoria"}
+      <br/>${product.description} </li>`; });
+      addProductForm.addEventListener("submit", (e) => { e.preventDefault();
+      const formData = new FormData(addProductForm); const newProduct =
+      Object.fromEntries(formData); socket.emit("addProduct", newProduct);
+      addProductForm.reset(); });
     </script>
   </body>
 </html>
