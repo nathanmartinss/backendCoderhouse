@@ -19,7 +19,7 @@
 
     <script>
       function addToCart(productId) {
-        fetch(`/api/carts/1/products/${productId}`, { method: "POST" })
+        fetch(`/api/carts/67be30f4d72743a60cfa4214/products/${productId}`, { method: "POST" })
           .then(response => response.json())
           .then(data => console.log("Produto adicionado:", data))
           .catch(error => console.error("Erro:", error));
