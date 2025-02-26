@@ -1,101 +1,80 @@
 require("dotenv").config();
 const express = require("express");
-const { create } = require("express-handlebars");
+const session = require("express-session");
+const passport = require("passport");
+const mongoose = require("mongoose");
 const path = require("path");
-const http = require("http");
+const { create } = require("express-handlebars");
 const { Server } = require("socket.io");
+const http = require("http");
+const Product = require("./models/Product");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const productsRouter = require("./routes/products.routes")(io);
-const cartsRouter = require("./routes/carts.routes");
-const authRouter = require("./routes/auth.routes");
-const Product = require("./models/Product");
-
+// Configuração Handlebars
 const hbs = create({ extname: ".handlebars" });
 app.engine(".handlebars", hbs.engine);
 app.set("view engine", ".handlebars");
 app.set("views", path.join(__dirname, "views"));
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const session = require("express-session");
-
+// Sessão
 app.use(
-  express.json(),
-  express.urlencoded({ extended: true }),
-  express.static(path.join(__dirname, "public"))
-);
-
-app.use(
-  express.urlencoded({ extended: true }),
-  express.json(),
-  express.static("public")
-);
-
-app.use(
-  require("express-session")({
+  session({
     secret: "secreto123",
     resave: false,
     saveUninitialized: false,
   })
 );
 
-const mongoose = require("mongoose");
+// Passport
+require("./config/passport.config")(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Conexão MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("🔥 Conectado ao MongoDB"))
-  .catch((err) => console.error("Erro ao conectar ao MongoDB", err));
+  .then(() => console.log("🔥 MongoDB conectado!"))
+  .catch((err) => console.error(err));
 
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-app.use("/", authRouter);
+// Rotas
+app.use("/", require("./routes/auth.routes"));
+app.use("/api/products", require("./routes/products.routes")(io));
+app.use("/api/carts", require("./routes/carts.routes"));
 
+// Middleware autenticação
 const authMiddleware = (req, res, next) => {
-  if (!req.session.user) return res.redirect("/login");
+  if (!req.isAuthenticated()) return res.redirect("/login");
   next();
 };
 
-app.get("/", authMiddleware, async (req, res) => {
-  const products = await Product.find().lean();
-  res.render("home", { products, user: req.session.user });
-});
-
+// Rotas protegidas
 app.get("/products", authMiddleware, async (req, res) => {
   const products = await Product.find().lean();
-  res.render("products", { products, user: req.session.user });
+  res.render("products", { products, user: req.user });
 });
 
-app.get("/realtimeproducts", authMiddleware, async (req, res) => {
-  const products = await Product.find().lean();
-  res.render("realTimeProducts", { products, user: req.session.user });
+app.get("/", (req, res) => {
+  res.redirect("/login");
 });
 
+// Websocket
 io.on("connection", async (socket) => {
-  console.log("Cliente conectado!");
-
   const products = await Product.find().lean();
   socket.emit("updateProducts", products);
-
-  socket.on("addProduct", async (product) => {
-    try {
-      const newProduct = new Product(product);
-      await newProduct.save();
-      const products = await Product.find().lean();
-      io.emit("updateProducts", products);
-    } catch (error) {
-      console.error("Erro ao adicionar produto:", error);
-    }
-  });
 });
 
+// Servidor
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+server.listen(PORT, () =>
+  console.log(`🚀 Rodando em http://localhost:${PORT}`)
+);
 
 module.exports = { app, io };

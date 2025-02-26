@@ -1,10 +1,8 @@
-<h2>Login</h2>
-<form action="/login" method="POST">
-  <input type="email" name="email" placeholder="E-mail" required />
-  <input type="password" name="password" placeholder="Senha" required />
-  <button type="submit">Entrar</button>
+<form action="/login" method="post">
+  <input type="email" name="email" required placeholder="Email" />
+  <input type="password" name="password" required placeholder="Senha" />
+  <button type="submit">Login</button>
 </form>
 
-{{#if error}}
-  <p style="color: red;">{{error}}</p>
-{{/if}}
+<a href="/github"><button>Login com GitHub</button></a>
+<a href="/register"><button>Cadastrar</button></a>
