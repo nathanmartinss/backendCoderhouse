@@ -11,11 +11,8 @@
     <ul id="productsList">
       {{#each products}}
         <li data-id="{{this._id}}">
-          <strong>{{this.name}}</strong>
-          - R$
-          {{this.price}}
-          {{#if this.category}} - {{this.category}}{{else}}
-            - Categoria não definida{{/if}}
+          <strong>{{this.name}}</strong> - R$ {{this.price}}
+          {{#if this.category}} - {{this.category}}{{else}} - Categoria não definida{{/if}}
           <br />
           <button onclick="addToCart('{{this._id}}')">Adicionar ao Carrinho</button>
         </li>
@@ -23,18 +20,33 @@
     </ul>
 
     <script>
-      const socket = io(); socket.on("updateProducts", (products) => { const
-      productsList = document.getElementById("productsList");
-      productsList.innerHTML = ""; products.forEach((product) => { const li =
-      document.createElement("li"); li.setAttribute("data-id", product._id);
-      li.innerHTML = ` <strong>${product.name}</strong> - R$ ${product.price} -
-      ${product.category || 'Categoria não definida'} <br /> <button
-      onclick="addToCart('${product._id}')">Adicionar ao Carrinho</button> `;
-      productsList.appendChild(li); }); }); function addToCart(productId) {
-      fetch('/api/carts/67be30f4d72743a60cfa4214/products/' + productId, {
-      method: "POST", headers: { "Content-Type": "application/json" } })
-      .then(response => response.json()) .then(data => console.log("Produto
-      adicionado:", data)) .catch(error => console.error("Erro:", error)); }
+      const socket = io();
+
+      socket.on("updateProducts", (products) => {
+        const productsList = document.getElementById("productsList");
+        productsList.innerHTML = "";
+
+        products.forEach((product) => {
+          const li = document.createElement("li");
+          li.setAttribute("data-id", product._id);
+
+          const category = product.category || "Categoria não definida";
+          const btn = `<button onclick="addToCart('${product._id}')">Adicionar ao Carrinho</button>`;
+
+          li.innerHTML = `<strong>${product.name}</strong> - R$ ${product.price} - ${category}<br />${btn}`;
+          productsList.appendChild(li);
+        });
+      });
+
+      function addToCart(productId) {
+        fetch('/api/carts/67be30f4d72743a60cfa4214/products/' + productId, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => console.log("Produto adicionado:", data))
+        .catch(error => console.error("Erro:", error));
+      }
     </script>
   </body>
 </html>

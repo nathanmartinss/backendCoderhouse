@@ -43,6 +43,7 @@ mongoose
 app.use("/", require("./routes/auth.routes"));
 app.use("/api/products", require("./routes/products.routes")(io));
 app.use("/api/carts", require("./routes/carts.routes"));
+app.use("/api", require("./routes/mocking.routes"));
 
 const authMiddleware = (req, res, next) => {
   if (!req.isAuthenticated()) return res.redirect("/login");
@@ -66,5 +67,8 @@ io.on("connection", async (socket) => {
 server.listen(config.PORT, () =>
   console.log(`🚀 Rodando em http://localhost:${config.PORT}`)
 );
+
+const errorHandler = require("./middlewares/errorHandler");
+app.use(errorHandler);
 
 module.exports = { app, io };
