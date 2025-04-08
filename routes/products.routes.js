@@ -1,16 +1,20 @@
 const express = require("express");
 const Product = require("../models/Product");
-const authMiddleware = require("../middlewares/auth.middleware");
+const { isAuthenticated } = require("../middlewares/auth.middleware");
 
 module.exports = (io) => {
   const router = express.Router();
 
-  router.get("/", authMiddleware, async (req, res) => {
-    const products = await Product.find().lean();
-    res.render("products", { user: req.session.user, products });
+  router.get("/", isAuthenticated, async (req, res) => {
+    try {
+      const products = await Product.find().lean();
+      res.status(200).json({ products });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
-  router.post("/", authMiddleware, async (req, res) => {
+  router.post("/", isAuthenticated, async (req, res) => {
     try {
       const { name, price, description, category, thumbnails } = req.body;
 
@@ -39,7 +43,7 @@ module.exports = (io) => {
     }
   });
 
-  router.put("/:id", authMiddleware, async (req, res) => {
+  router.put("/:id", isAuthenticated, async (req, res) => {
     try {
       const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
@@ -60,7 +64,7 @@ module.exports = (io) => {
     }
   });
 
-  router.delete("/:id", authMiddleware, async (req, res) => {
+  router.delete("/:id", isAuthenticated, async (req, res) => {
     try {
       const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
