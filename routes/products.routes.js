@@ -2,6 +2,151 @@ const express = require("express");
 const Product = require("../models/Product");
 const { isAuthenticated } = require("../middlewares/auth.middleware");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Produtos
+ *   description: API para gerenciamento de produtos
+ */
+
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Lista todos os produtos
+ *     tags: [Produtos]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de produtos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 products:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *
+ *   post:
+ *     summary: Cria um novo produto
+ *     tags: [Produtos]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductInput'
+ *     responses:
+ *       201:
+ *         description: Produto criado
+ *       400:
+ *         description: Campos obrigatórios faltando
+ *       500:
+ *         description: Erro interno
+ */
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Atualiza um produto existente
+ *     tags: [Produtos]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do produto
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductInput'
+ *     responses:
+ *       200:
+ *         description: Produto atualizado com sucesso
+ *       404:
+ *         description: Produto não encontrado
+ *       500:
+ *         description: Erro interno
+ *
+ *   delete:
+ *     summary: Remove um produto
+ *     tags: [Produtos]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do produto a ser deletado
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Produto removido
+ *       404:
+ *         description: Produto não encontrado
+ *       500:
+ *         description: Erro interno
+ */
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: connect.sid
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         price:
+ *           type: number
+ *         description:
+ *           type: string
+ *         category:
+ *           type: string
+ *         thumbnails:
+ *           type: array
+ *           items:
+ *             type: string
+ *     ProductInput:
+ *       type: object
+ *       required:
+ *         - name
+ *         - price
+ *         - description
+ *       properties:
+ *         name:
+ *           type: string
+ *         price:
+ *           type: number
+ *         description:
+ *           type: string
+ *         category:
+ *           type: string
+ *         thumbnails:
+ *           type: array
+ *           items:
+ *             type: string
+ */
+
 module.exports = (io) => {
   const router = express.Router();
 

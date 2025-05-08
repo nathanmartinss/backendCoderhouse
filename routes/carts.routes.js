@@ -7,6 +7,134 @@ const productDAO = require("../dao/ProductDAO");
 const { isUser } = require("../middlewares/auth.middleware");
 const UserDTO = require("../dto/UserDTO");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Carrinho
+ *   description: Operações relacionadas ao carrinho de compras
+ */
+
+/**
+ * @swagger
+ * /api/carts:
+ *   post:
+ *     summary: Cria um novo carrinho vazio
+ *     tags: [Carrinho]
+ *     responses:
+ *       201:
+ *         description: Carrinho criado com sucesso
+ *       500:
+ *         description: Erro no servidor
+ */
+
+/**
+ * @swagger
+ * /api/carts/{cid}/products/{pid}:
+ *   post:
+ *     summary: Adiciona um produto ao carrinho
+ *     tags: [Carrinho]
+ *     parameters:
+ *       - in: path
+ *         name: cid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho
+ *       - in: path
+ *         name: pid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do produto
+ *     responses:
+ *       200:
+ *         description: Produto adicionado ou atualizado no carrinho
+ *       404:
+ *         description: Carrinho não encontrado
+ *       500:
+ *         description: Erro no servidor
+ *
+ *   delete:
+ *     summary: Remove um produto do carrinho
+ *     tags: [Carrinho]
+ *     parameters:
+ *       - in: path
+ *         name: cid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho
+ *       - in: path
+ *         name: pid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do produto
+ *     responses:
+ *       200:
+ *         description: Produto removido do carrinho
+ *       404:
+ *         description: Carrinho não encontrado
+ *       500:
+ *         description: Erro no servidor
+ */
+
+/**
+ * @swagger
+ * /api/carts/{cid}:
+ *   get:
+ *     summary: Retorna o conteúdo do carrinho
+ *     tags: [Carrinho]
+ *     parameters:
+ *       - in: path
+ *         name: cid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho
+ *     responses:
+ *       200:
+ *         description: Conteúdo do carrinho
+ *       404:
+ *         description: Carrinho não encontrado
+ *       500:
+ *         description: Erro no servidor
+ */
+
+/**
+ * @swagger
+ * /api/carts/{cid}/purchase:
+ *   post:
+ *     summary: Finaliza a compra do carrinho
+ *     tags: [Carrinho]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: cid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do carrinho
+ *     responses:
+ *       201:
+ *         description: Compra finalizada com sucesso (ticket gerado)
+ *       404:
+ *         description: Carrinho não encontrado
+ *       500:
+ *         description: Erro no servidor
+ */
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: connect.sid
+ */
+
 router.post("/", async (req, res) => {
   try {
     const newCart = new Cart({ products: [] });
