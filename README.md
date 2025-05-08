@@ -1,6 +1,6 @@
 # 🛒 Projeto E-commerce em Node.js
 
-Este é um projeto de e-commerce desenvolvido com **Node.js**, **Express**, **MongoDB** e **Handlebars**, utilizando **WebSocket (Socket.IO)** para atualizações em tempo real e **autenticação com Passport** (Login local e via GitHub).
+Este é um projeto de e-commerce completo desenvolvido com **Node.js**, **Express**, **MongoDB** e **Handlebars**, integrando **WebSocket (Socket.IO)** para atualizações em tempo real, **Passport** para autenticação (local e via GitHub), e **Swagger** para documentação da API.
 
 ---
 
@@ -8,36 +8,51 @@ Este é um projeto de e-commerce desenvolvido com **Node.js**, **Express**, **Mo
 
 ### 👤 Autenticação
 - Registro e login com e-mail e senha
-- Login com GitHub OAuth
-- Sessões autenticadas com `express-session`
+- Login via GitHub OAuth com passport-github2
+- Sessões com express-session
 - Middleware de proteção para rotas privadas
 
 ### 🛍️ Produtos
-- Listagem de produtos com `Handlebars`
-- Atualização em tempo real com **Socket.IO**
-- Criação, edição e remoção de produtos (via API)
-- Adição de produtos ao carrinho com clique em botão
+- Listagem dinâmica de produtos com Handlebars
+- Atualização em tempo real via Socket.IO
+- Criação, edição e exclusão de produtos via API REST
+- Adição de produtos ao carrinho diretamente da interface
 
 ### 🛒 Carrinho de Compras
-- Adição de produtos ao carrinho
-- Integração com MongoDB via Mongoose
-- Persistência de dados
+
+- Criação e recuperação de carrinhos
+- Adição e remoção de produtos no carrinho
+- Persistência de carrinhos no MongoDB
+- Processo de compra com verificação de estoque
+- Geração de Ticket com valor total e e-mail do comprador
+- Produtos sem estoque permanecem no carrinho
+
+### 📄 Swagger (Documentação de API)
+- Documentação interativa disponível em /api-docs
+- Inclui rotas de autenticação, produtos, carrinho, mocking, etc.
+
+### 📦 Logger
+- Middleware personalizado de logger via winston
+- Logs formatados com níveis: info, warn, error, etc.
+- Rota especial /loggerTest para teste de log em diferentes níveis
+- Logger global disponível via req.logger
 
 ### 💬 WebSocket (Socket.IO)
-- Atualizações em tempo real da lista de produtos para todos os usuários conectados
+- Atualização em tempo real da lista de produtos para todos os clientes conectados
+- Emissão automática após alteração em produtos
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- Node.js
-- Express.js
-- MongoDB + Mongoose
-- Express-session
-- Passport + Passport-GitHub
-- Handlebars
+- Node.js / Express.js
+- MongoDB com Mongoose
+- Handlebars (engine de templates)
 - Socket.IO
-- JavaScript (ES6)
+- Passport.js + GitHub OAuth
+- Swagger (swagger-ui-express)
+- Winston (Logger)
+- dotenv para variáveis de ambiente
 
 ---
 
