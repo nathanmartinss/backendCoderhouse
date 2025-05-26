@@ -1,4 +1,4 @@
-# 🛒 Projeto E-commerce em Node.js
+# 🛒 Projeto E-commerce da Coderhouse
 
 Este é um projeto de e-commerce completo desenvolvido com **Node.js**, **Express**, **MongoDB** e **Handlebars**, integrando **WebSocket (Socket.IO)** para atualizações em tempo real, **Passport** para autenticação (local e via GitHub), e **Swagger** para documentação da API.
 
