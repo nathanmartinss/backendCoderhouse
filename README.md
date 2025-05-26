@@ -90,7 +90,7 @@ Abra no navegador:
 http://localhost:3000
 ```
 
-##📁 Estrutura de Pastas
+## 📁 Estrutura de Pastas
 ```csharp
 ├── config/               # Arquivos de configuração (passport, .env)
 ├── dao/                  # Acesso a dados
