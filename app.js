@@ -6,7 +6,6 @@ const path = require("path");
 const http = require("http");
 const { create } = require("express-handlebars");
 const { Server } = require("socket.io");
-
 const config = require("./config/config");
 const { logger } = require("./config/logger");
 const { addLogger } = require("./middlewares/logger.middleware");
@@ -65,6 +64,7 @@ app.use("/api/products", require("./routes/products.routes")(io));
 app.use("/api/carts", require("./routes/carts.routes"));
 app.use("/api", require("./routes/mocking.routes"));
 app.use("/", require("./routes/logger.routes"));
+app.use("/api/users", require("./routes/users.routes"));
 
 // Configuração do Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

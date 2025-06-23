@@ -1,6 +1,8 @@
 const express = require("express");
 const Product = require("../models/Product");
 const { isAuthenticated } = require("../middlewares/auth.middleware");
+const nodemailer = require("nodemailer");
+const User = require("../models/User");
 
 /**
  * @swagger
@@ -175,6 +177,7 @@ module.exports = (io) => {
         description,
         category: category || "Geral",
         thumbnails: thumbnails || [],
+        owner: req.user._id,
       });
 
       await newProduct.save();
@@ -211,11 +214,29 @@ module.exports = (io) => {
 
   router.delete("/:id", isAuthenticated, async (req, res) => {
     try {
-      const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-
-      if (!deletedProduct) {
+      const product = await Product.findById(req.params.id).populate("owner");
+      if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." });
       }
+
+      if (product.owner && product.owner.role === "premium") {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: product.owner.email,
+          subject: "Produto excluído",
+          text: `Seu produto "${product.name}" foi excluído do sistema.`,
+        });
+      }
+
+      await Product.findByIdAndDelete(req.params.id);
 
       const products = await Product.find().lean();
       io.emit("updateProducts", products);
